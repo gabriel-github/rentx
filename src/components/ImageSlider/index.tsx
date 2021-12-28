@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { ViewToken } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 
 import {
   Container,
@@ -12,24 +14,45 @@ interface Props {
   imagesUrl: string[];
 }
 
+interface ChangeImageProps {
+  viewableItems: ViewToken[];
+  changed: ViewToken[];
+}
+
 export function ImageSlider({ imagesUrl }: Props) {
+  const [imageIndex, setImageIndex] = useState(0);
+
+  const indexChanged = useRef((info: ChangeImageProps) => {
+    const index = info.viewableItems[0].index!;
+
+    setImageIndex(index);
+  });
+
   return (
     <Container>
       <ImageIndexes>
-        <ImageIndex active={true} />
-        <ImageIndex active={false} />
-        <ImageIndex active={false} />
-        <ImageIndex active={false} />
+        {imagesUrl.map((item, index) => (
+          <ImageIndex key={index} active={index === imageIndex} />
+        ))}
       </ImageIndexes>
 
-      <CardImageWrapper>
-        <CardImage
-          source={{
-            uri: imagesUrl[0],
-          }}
-          resizeMode="contain"
-        />
-      </CardImageWrapper>
+      <FlatList
+        data={imagesUrl}
+        keyExtractor={(key) => key}
+        renderItem={({ item }) => (
+          <CardImageWrapper>
+            <CardImage
+              source={{
+                uri: item,
+              }}
+              resizeMode="contain"
+            />
+          </CardImageWrapper>
+        )}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        onViewableItemsChanged={indexChanged.current}
+      />
     </Container>
   );
 }
