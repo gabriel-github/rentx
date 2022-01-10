@@ -1,17 +1,15 @@
 import React, { useRef, useState } from "react";
 import { ViewToken } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import { Bullet } from "../Bullet";
 
-import {
-  Container,
-  ImageIndexes,
-  ImageIndex,
-  CardImageWrapper,
-  CardImage,
-} from "./styles";
+import { Container, ImageIndexes, CardImageWrapper, CardImage } from "./styles";
 
 interface Props {
-  imagesUrl: string[];
+  imagesUrl: {
+    id: string;
+    photo: string;
+  }[];
 }
 
 interface ChangeImageProps {
@@ -32,18 +30,18 @@ export function ImageSlider({ imagesUrl }: Props) {
     <Container>
       <ImageIndexes>
         {imagesUrl.map((item, index) => (
-          <ImageIndex key={index} active={index === imageIndex} />
+          <Bullet key={String(item.id)} active={index === imageIndex} />
         ))}
       </ImageIndexes>
 
       <FlatList
         data={imagesUrl}
-        keyExtractor={(key) => key}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <CardImageWrapper>
             <CardImage
               source={{
-                uri: item,
+                uri: item.photo,
               }}
               resizeMode="contain"
             />
